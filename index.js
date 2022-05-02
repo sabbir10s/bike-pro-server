@@ -9,7 +9,7 @@ app.use(cors())
 app.use(express.json())
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.APP_USER}:${process.env.APP_PASS}@cluster0.x22e7.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -27,12 +27,13 @@ async function run() {
             const products = await cursor.toArray();
             res.send(products);
         })
+        
         //get single product
-
         app.get("/product/:id", async (req, res) => {
-            // const id = req.params.id;
-            console.log(req);
-
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const product = await productCollection.findOne(query);
+            res.send(product);
         })
 
 
