@@ -27,7 +27,7 @@ async function run() {
             const products = await cursor.toArray();
             res.send(products);
         })
-        
+
         //get single product
         app.get("/product/:id", async (req, res) => {
             const id = req.params.id;
@@ -36,6 +36,14 @@ async function run() {
             res.send(product);
         })
 
+        //post new product
+        app.post('/product', async (req, res) => {
+            const newProduct = req.body;
+            console.log("Adding new product success", newProduct);
+            const result = await productCollection.insertOne(newProduct);
+            res.send(result)
+
+        })
 
 
     } finally {
