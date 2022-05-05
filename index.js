@@ -45,6 +45,25 @@ async function run() {
 
         })
 
+        // Delete Product
+
+        app.delete("/product/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await productCollection.deleteOne(query);
+            res.send(result);
+        })
+
+
+        //get my items
+
+        app.get("/myproduct", async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const cursor = productCollection.find(query);
+            const products = await cursor.toArray();
+            res.send(products);
+        })
 
     } finally {
         //   await client.close();
