@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const res = require('express/lib/response');
 const app = express();
 const port = process.env.PORT || 5000;
@@ -50,8 +51,6 @@ async function run() {
             const id = req.params.id;
             const updatedQuantity = req.body;
 
-            console.log(updatedQuantity);
-
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updatedDoc = {
@@ -81,6 +80,16 @@ async function run() {
             const cursor = productCollection.find(query);
             const products = await cursor.toArray();
             res.send(products);
+        })
+
+
+        //AUTH 
+        app.post('/login', async (req, res) => {
+            const user = req.body  //get user information
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+                expiresIn: '1d'
+            });
+            res.send({ accessToken });
         })
 
     } finally {
