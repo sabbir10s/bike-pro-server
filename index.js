@@ -42,7 +42,7 @@ async function run() {
         app.get("/product", async (req, res) => {
             const query = {};
             const cursor = productCollection.find(query);
-            const products = await cursor.toArray();
+            const products = await (await cursor.toArray()).reverse();
             res.send(products);
         })
 
@@ -66,13 +66,31 @@ async function run() {
         // Update Quantity
         app.put('/product/:id', async (req, res) => {
             const id = req.params.id;
-            const updatedQuantity = req.body;
-
             const filter = { _id: ObjectId(id) };
+            const { quantity } = req.body
             const options = { upsert: true };
             const updatedDoc = {
                 $set: {
-                    quantity: updatedQuantity.quantity
+                    quantity: quantity,
+
+                }
+            };
+            const result = await productCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        })
+
+        // update all product information
+        app.put('/productInfo/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const { product_name, quantity, price, picture } = req.body
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    product_name: product_name,
+                    quantity: quantity,
+                    price: price,
+                    picture: picture,
                 }
             };
             const result = await productCollection.updateOne(filter, updatedDoc, options);
@@ -90,7 +108,7 @@ async function run() {
 
 
         //get my product
-        app.get("/myproduct", verifyJWT, async (req, res) => {
+        app.get("/myproduct", async (req, res) => {
             const decodedEmail = req.decoded.email;
             const email = req.query.email;
             if (email === decodedEmail) {
