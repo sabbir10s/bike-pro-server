@@ -114,7 +114,7 @@ async function run() {
             if (email === decodedEmail) {
                 const query = { email: email };
                 const cursor = productCollection.find(query);
-                const products = await cursor.toArray();
+                const products = await (await cursor.toArray()).reverse();
                 res.send(products);
             }
             else {
