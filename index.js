@@ -108,8 +108,8 @@ async function run() {
 
 
         //get my product
-        app.get("/myproduct", async (req, res) => {
-            const decodedEmail = req.decoded.email;
+        app.get("/myproduct", verifyJWT, async (req, res) => {
+            const decodedEmail = req.decoded?.email;
             const email = req.query.email;
             if (email === decodedEmail) {
                 const query = { email: email };
