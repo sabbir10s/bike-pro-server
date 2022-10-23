@@ -37,6 +37,7 @@ async function run() {
     try {
         await client.connect();
         const productCollection = client.db("bikePro").collection("products");
+        const deliverCollection = client.db("bikePro").collection("deliver");
 
         // get all Products
         app.get("/product", async (req, res) => {
@@ -57,7 +58,6 @@ async function run() {
         //post new product
         app.post('/product', async (req, res) => {
             const newProduct = req.body;
-            console.log("Adding new product success", newProduct);
             const result = await productCollection.insertOne(newProduct);
             res.send(result)
 
@@ -79,7 +79,7 @@ async function run() {
             res.send(result);
         })
 
-        // update all product information
+        // update product information
         app.put('/productInfo/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
@@ -104,6 +104,22 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const result = await productCollection.deleteOne(query);
             res.send(result);
+        })
+
+        // post deliver a product
+        app.post('/deliver', async (req, res) => {
+            const newProduct = req.body;
+            const result = await deliverCollection.insertOne(newProduct);
+            res.send(result)
+
+        })
+        // get delivered info
+        app.get('/deliver', async (req, res) => {
+            const query = {};
+            const cursor = deliverCollection.find(query);
+            const deliver = await (await cursor.toArray()).reverse();
+            res.send(deliver);
+
         })
 
 
